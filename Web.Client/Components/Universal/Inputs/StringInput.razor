@@ -1,0 +1,36 @@
+﻿@using Common.Extensions.Object;
+
+@inherits BaseInput<string>
+@inject GlobalClicksCatcher globalClickCatcher;
+
+<div class="edit-field">
+    <input @bind="Value" class="@(InputClass())" @oninput="s => _onTextInput(s.Value.ToString())" />
+    @if (!string.IsNullOrEmpty(InputLabel))
+    {
+        <span>@InputLabel</span>
+    }
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+</div>
+
+@code{
+
+    [Parameter]
+    public Func<string, string> InvalidityCondition { get; set; } = s => "";
+
+
+    private void _onTextInput(string s)
+    {
+        Value = s;
+        OnValueSet(s);
+    }
+
+    public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+
+    public string ErrorMessage => InvalidityCondition(Value);
+
+    private string InputClass() => HasError ? "errored" : "";
+    
+}

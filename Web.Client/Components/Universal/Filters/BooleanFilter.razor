@@ -1,0 +1,21 @@
+﻿@using Communication.Models.Filters.BooleanFilter;
+@using Universal.Inputs;
+
+@inherits PropertyFilterBase<bool, BooleanFilterModel>
+
+<Web.Client.Components.Universal.Inputs.Flag OnValueSet="v => { Value = v; OnFilterChange(ValueWithFlag, GetResult()); }" InputLabel="@InputLabel" Value="@Value">
+    <Web.Client.Components.Universal.Inputs.Flag OnValueSet="v => { Filters = v; OnFilterChange(ValueWithFlag, GetResult()); }" Value="@Filters" />
+</Web.Client.Components.Universal.Inputs.Flag>
+
+@code {
+    protected override BooleanFilterModel GetResult()
+    {
+        if (!Filters) { return null; }
+        BooleanFilterModel result = new BooleanFilterModel
+        {
+            Value = Value
+        };
+        return result;
+        
+    }
+}

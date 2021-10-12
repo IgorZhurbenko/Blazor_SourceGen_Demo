@@ -1,0 +1,32 @@
+﻿@using Communication.Models.Filters.StringFilter;
+@using Universal.Inputs;
+
+@inherits PropertyFilterBase<string, StringFilterModel>
+
+<Web.Client.Components.Universal.Inputs.StringInput OnValueSet="v => onTextInput(v)" InputLabel="@InputLabel" Value="@Value">
+    <Web.Client.Components.Universal.Inputs.Flag Value="Filters" OnValueSet="v => { Filters = v; OnFilterChange(ValueWithFlag, GetResult()); }" />
+</Web.Client.Components.Universal.Inputs.StringInput>
+
+@code {
+    protected override StringFilterModel GetResult()
+    {
+        if (Value.IsVoid() || !Filters)
+        {
+            return null;
+        }
+        StringFilterModel result = new StringFilterModel()
+        {
+            Pattern = $"%{Value}%"
+        };
+        return result;
+    }
+
+    void onTextInput(string value)
+    {
+        Filters = !value.IsVoid();
+        Value = value;
+        OnFilterChange(ValueWithFlag, GetResult());
+    }
+
+
+}

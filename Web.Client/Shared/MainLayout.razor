@@ -1,0 +1,59 @@
+﻿@inherits LayoutComponentBase
+@inject GlobalClicksCatcher globalClickCatcher;
+@inject Services.ServerCommunication.UserStandardActionsInvoker userActions;
+@inject Services.ServerCommunication.SessionActionsInvoker sessionActions;
+
+
+<div class="page" @onclick="e => globalClickCatcher.OnGlobalMouseClick(this, e)" @onkeydown="e => globalClickCatcher.OnKeyClick(this, e)">
+    <div class="sidebar">
+        <NavMenu UserPermissions="UserPermissions"/>
+    </div>
+
+    <div class="main">
+        <div class="top-row px-4 auth">
+            <LoginDisplay OnLogoutCallback="async () => await OnLogOutCallback()"/>
+            <a class="nav-link" href="/about">About</a>
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+@code 
+{
+    private Communication.Models.Entities.Permissions.IPermissionsModel UserPermissions => Account.Permissions;
+
+    private async Task OnLogOutCallback()
+    {
+        StateHasChanged();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!Account.Authorised() && await Account.LoadSessionFromStorageAsync())
+        {
+            var permissions = await sessionActions.VerifySession.GetResultAsync(Account.SessionKey, Account.User.ID);
+            Account.SetPermissions(permissions);
+        }
+        globalClickCatcher.DropHandlers();
+        await base.OnParametersSetAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Account.SignedIn += StateHasChanged;
+            Account.SignedOut += StateHasChanged;
+
+
+        }
+        base.OnAfterRender(firstRender);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+}

@@ -1,0 +1,28 @@
+﻿@page "/about"
+
+<h3>About</h3>
+
+@foreach (var line in englishText.Split('\n'))
+{
+    <span>@line</span>
+    <br />
+}
+
+@code {
+    string englishText = @"
+    
+sdfdsf
+dsfdsfdsf
+dsfdsfsdf
+dsfdsfs
+
+dsfdsf
+dsfdsfds
+dsfdsf
+dsfdsf
+
+
+dsfsdf
+";
+}
+    

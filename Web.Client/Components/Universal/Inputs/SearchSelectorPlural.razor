@@ -1,0 +1,124 @@
+﻿@typeparam TItem;
+@inherits SearchSelectorBase<TItem>;
+@using Common.Extensions.Object;
+
+@inject GlobalClicksCatcher globalClickCatcher;
+@*<input @oninput="async e => await OnFilterChange(e.Value.ToString())" @bind-value="_filterString" />*@
+
+<div>
+
+    <StringInput InputLabel="@InputLabel" OnValueSet="async s => await OnFilterChange(s)" Value="@_filterString">
+
+        <ul class="selected-items">
+            @foreach (var selectedItem in SelectedItems)
+            {
+                <li>
+                    @GetItemRepresentation(selectedItem)
+                    <span style="margin-left: 5px; font-size: 18px" @onclick="(a) => SelectedItems.Remove(selectedItem)">
+                        -
+                    </span>
+                </li>
+            }
+        </ul>
+
+        @if (_showList)
+        {
+            string listClass = $"referrables-list " + (!string.IsNullOrEmpty(InputLabel) ? "with-label" : "");
+            <ul class="@listClass" @onmouseover="() => _pointerHovers = true" @onmouseout="() => _pointerHovers = false">
+                @foreach (var item in _currentBatch)
+                {
+                    string selected = ItemsComparison(SelectedItem, item) ? "selected" : "";
+                    <li @onclick="e => { _toggleList(false); _onItemSelect(item); }" class="@selected">
+                        @GetItemRepresentation(item)
+                    </li>
+                }
+            </ul>
+        }
+
+    </StringInput>
+</div>
+
+@code{
+
+    [Parameter]
+    public IList<TItem> SelectedItems { get; set; } = new List<TItem>();
+
+    private bool _pointerHovers = false;
+
+    protected sealed override void _onItemSelect(TItem item)
+    {
+        SelectedItem = item;
+        _filterString = GetItemRepresentation(item);
+        if (OnItemSelect != null)
+        {
+            OnItemSelect(item);
+        }
+        StateHasChanged();
+    }
+
+    protected override IList<TItem> ProcessBatch(IList<TItem> incomingBatch)
+    {
+        return incomingBatch.Where(i1 => !SelectedItems.Any(i2 => ItemsComparison(i1,i2))).ToList();
+    }
+
+    protected override void _toggleList(bool onoff)
+    {
+        base._toggleList(onoff);
+        AnythingSelected = false;
+    }
+
+    protected override void ConfigureClickHandlers()
+    {
+        base.ConfigureClickHandlers();
+        OnGlobalMouseClick = new((o, m) =>
+        {
+            if (!_pointerHovers)
+            {
+                _toggleList(false);
+                StateHasChanged();
+            }
+        });
+        OnKeyClick = new((o, m) =>
+        {
+            if (m.Key == "ArrowDown" && _currentBatch.Any())
+            {
+                int selectedIndex = SelectedItem != null ? _currentBatch.IndexOf(SelectedItem) : (-1);
+                if (selectedIndex < _currentBatch.Count - 1)
+                {
+                    Console.WriteLine(selectedIndex);
+                    _onItemSelect(_currentBatch[selectedIndex + 1]);
+                }
+                else
+                {
+                    _onItemSelect(_currentBatch.First());
+                }
+
+            }
+            else if (m.Key == "ArrowUp" && _currentBatch.Any())
+            {
+                int selectedIndex = SelectedItem != null ? _currentBatch.IndexOf(SelectedItem) : (_currentBatch.Count - 1);
+                if (selectedIndex > 0)
+                {
+                    _onItemSelect(_currentBatch[selectedIndex - 1]);
+                }
+                else
+                {
+                    _onItemSelect(_currentBatch[_currentBatch.Count - 1]);
+                }
+            }
+            else if (m.Key == "Enter")
+            {
+                _toggleList(false);
+                if (SelectedItem != null)
+                {
+                    SelectedItems.Add(SelectedItem);
+                }
+                _filterString = "";
+                StateHasChanged();
+            }
+        });
+    }
+
+
+
+}

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc" Version="2.38.1" PrivateAssets="all" />
+    <PackageReference Include="Grpc.Tools" Version="2.38.1" PrivateAssets="all" />
+    <PackageReference Include="Google.Protobuf" Version="3.17.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include=".\Models.proto" GrpcServices="Client" Link="Protos\Models.proto" />
+    <Protobuf Include=".\PrimitiveMessages.proto" GrpcServices="Client" Link="Protos\PrimitiveMessages.proto" />
+    <Protobuf Include=".\ExceptionMessage.proto" GrpcServices="Client" Link="Protos\ExceptionMessage.proto" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Common\Common.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,23 @@
+﻿@page "/experiments"
+@inject HttpClient Http
+@inject Web.Client.Services.ServerCommunication.SimpleActionsInvoker simpleInvoker;
+@inject Web.Client.Services.ServerCommunication.EmployeeStandardActionsInvoker employeeStandardActions;
+@inject Web.Client.Services.ServerCommunication.EmployeeCustomActionsInvoker customActions;
+@using Communication.Models.Entities.ReferrableEntities.DataHolders.Persons.Employee;
+@using Communication.Models.Filters.EmployeeModelFilter;
+@using Communication.Models.Filters;
+@using Common.Extensions.Object;
+@using Components.Universal;
+@using Web.Client.Components.Universal.Inputs;
+@using Web.Client.Functions;
+@using Web.Client.Components.Universal.Dropdowns;
+
+<h1>Experiments</h1>
+
+@*<Web.Client.Components.Universal.Filters.StringFilter OnFilterChange="(v,f)=>Console.WriteLine(f.ToJson(true))" />*@
+
+    <Web.Client.Components.Universal.Filters.NumberFilter OnFilterChange="(v,f)=>Console.WriteLine(v.ToJson())" />
+
+@code {
+    
+    }

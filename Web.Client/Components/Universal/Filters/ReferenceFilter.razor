@@ -1,0 +1,36 @@
+﻿@using Communication.Models.Filters.ReferenceFilter;
+@using Communication.Models.Filters.StringFilter;
+@using Universal.Inputs;
+
+@inherits PropertyFilterBase<string, ReferenceFilterModel>
+
+<Web.Client.Components.Universal.Inputs.StringInput OnValueSet="v => onTextInput(v)" InputLabel="@InputLabel" Value="@Value">
+    <Web.Client.Components.Universal.Inputs.Flag Value="Filters" OnValueSet="v => { Filters = v; OnFilterChange(ValueWithFlag, GetResult()); }" />
+</Web.Client.Components.Universal.Inputs.StringInput>
+
+@code {
+    protected override ReferenceFilterModel GetResult()
+    {
+        if (!Filters)
+        {
+            return null;
+        }
+        ReferenceFilterModel result = new ReferenceFilterModel
+        {
+            Representation = new StringFilterModel()
+            {
+                Pattern = $"%{Value}%"
+            }
+        };
+        return result;
+    }
+
+    void onTextInput(string value)
+    {
+        Filters = !value.IsVoid();
+        Value = value;
+        OnFilterChange(new() { Filters = Filters, Value = Value }, GetResult());
+
+    }
+
+}

@@ -1,0 +1,18 @@
+UNHANDLED EXCEPTIONS FROM PROCESS 5568:
+=====================
+9/12/2021 10:36:21 PM
+System.Runtime.Serialization.SerializationException: Invalid BinaryFormatter stream.
+ ---> System.OutOfMemoryException: Exception of type 'System.OutOfMemoryException' was thrown.
+   at System.Runtime.Serialization.ObjectManager.DoFixups()
+   at System.Runtime.Serialization.Formatters.Binary.ObjectReader.Deserialize(BinaryParser serParser) in System.Runtime.Serialization.Formatters.dll:token 0x6000236+0x76
+   at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream) in System.Runtime.Serialization.Formatters.dll:token 0x60001c6+0xa4
+   --- End of inner exception stack trace ---
+   at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream) in System.Runtime.Serialization.Formatters.dll:token 0x60001c6+0xbf
+   at Microsoft.Build.BackEnd.BinaryTranslator.BinaryReadTranslator.TranslateDotNet[T](T& value) in Microsoft.Build.dll:token 0x600235c+0x15
+   at Microsoft.Build.BackEnd.BinaryTranslator.BinaryReadTranslator.TranslateException(Exception& value) in Microsoft.Build.dll:token 0x600235d+0x0
+   at Microsoft.Build.Execution.BuildResult.Microsoft.Build.BackEnd.ITranslatable.Translate(ITranslator translator) in Microsoft.Build.dll:token 0x6000df9+0xcc
+   at Microsoft.Build.BackEnd.BuildRequestUnblocker.Translate(ITranslator translator) in Microsoft.Build.dll:token 0x600153d+0xc
+   at Microsoft.Build.BackEnd.BuildRequestUnblocker.FactoryForDeserialization(ITranslator translator) in Microsoft.Build.dll:token 0x600153e+0x0
+   at Microsoft.Build.BackEnd.NodePacketFactory.DeserializeAndRoutePacket(Int32 nodeId, NodePacketType packetType, ITranslator translator) in Microsoft.Build.dll:token 0x60010bd+0x31
+   at Microsoft.Build.BackEnd.NodeEndpointOutOfProcBase.RunReadLoop(Stream localReadPipe, Stream localWritePipe, ConcurrentQueue`1 localPacketQueue, AutoResetEvent localPacketAvailable, AutoResetEvent localTerminatePacketPump) in Microsoft.Build.dll:token 0x600107a+0xf4
+===================

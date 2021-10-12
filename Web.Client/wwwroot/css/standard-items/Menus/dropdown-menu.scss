@@ -1,0 +1,29 @@
+﻿
+.dropdown-content {
+    position: absolute;
+    width: inherit;
+    border-radius: 5px;
+    background-color: lightgray;
+    padding: 4px;
+
+
+    li {
+        display: block;
+        font-family: cursive;
+        padding: 0 1px 0 1px;
+
+        button {
+            text-align: left;
+            width: 100%;
+            display: block;
+        }
+
+        a {
+            margin-left: 0;
+        }
+    }
+
+    li:hover {
+        background-color: ghostwhite;
+    }
+}

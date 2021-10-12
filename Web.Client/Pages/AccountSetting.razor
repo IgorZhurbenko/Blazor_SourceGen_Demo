@@ -1,0 +1,65 @@
+﻿@layout Web.Client.Shared.EmptyLayout;
+@page "/account/{*RedirectToAfter}"
+@inject NavigationManager navMan;
+@using Web.Client.Components.Universal.Inputs;
+@using Communication.Exceptions;
+
+@inject Web.Client.Services.ServerCommunication.SessionActionsInvoker sessionInvoker;
+
+
+<div class="card-central card-login">
+    <h6 style="text-align:center"> Login here </h6>
+
+    <StringInput InputLabel="Password" OnValueSet="v => { PasswordEntered = v; ErrorMessage = null; StateHasChanged(); }" Value="@PasswordEntered" />
+
+    <button style="margin-left:80%"
+            @onclick="async e => await OnLoginClick()">
+        Sign in
+    </button>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <p style="color:red">
+            @ErrorMessage
+        </p>
+    }
+
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string PasswordEntered { get; set; } = "";
+
+    public string PasswordRepeated { get; set; } = "";
+
+    [Parameter]
+    public string ErrorMessage { get; set; }
+
+    [Parameter]
+    public string RedirectToAfter { get; set; }
+
+    async Task OnLoginClick()
+    {
+        try
+        {
+            var response = await sessionInvoker.StartSession.GetResultAsync("", PasswordEntered);
+            Account.AuthoriseSession(response.SessionKey,  response.User, response.Permissions);
+            navMan.NavigateTo(RedirectToAfter ?? "/");
+        }
+        catch (ServerSideException ex)
+        {
+            if (ex.InnerException is InvalidCredentialsHadledException)
+            {
+                ErrorMessage = ex.InnerException.Message;
+                Console.WriteLine($"But would redirect to {RedirectToAfter}.");
+                StateHasChanged();
+            }
+            else
+            {
+                throw;
+            }
+        }
+    }
+}

@@ -1,0 +1,84 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+    <UserSecretsId>1c3cafab-2f7d-4a06-b84c-46691a8e5dcf</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="compilerconfig.json" />
+    <Content Remove="wwwroot\css\MDB\css\NavMenu.css" />
+    <Content Remove="wwwroot\css\NavMenu.css" />
+    <Content Remove="wwwroot\css\standard-items\standard-items.css" />
+    <Content Remove="wwwroot\css\standard-items\standard-items.scss" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".dockerignore" />
+    <None Remove="Dockerfile" />
+    <None Remove="Dockerfile.original" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\css\app.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\standard-items\standard-items.min.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\Communication\Services.proto" GrpcServices="Client" Link="..\Protos\Services.proto" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" Version="2.38.0" />
+    <PackageReference Include="Grpc.Net.Client.Web" Version="2.38.0" />
+    
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.7" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="5.0.7" />
+
+    <PackageReference Include="Grpc" Version="2.38.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.38.1" PrivateAssets="all" />
+    <PackageReference Include="Google.Protobuf" Version="3.17.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
+
+    <PackageReference Include="MudBlazor" Version="5.1.0" />
+
+    <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
+    <None Include="wwwroot\css\MDB\scss\NavMenu.scss" />
+    <None Include="wwwroot\css\NavMenu.css" />
+    <None Include="wwwroot\css\standard-items\standard-items.css">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>standard-items.scss</DependentUpon>
+    </None>
+    <None Include="wwwroot\css\standard-items\standard-items.scss">
+      <Generator>SassTranspiler</Generator>
+      <LastGenOutput>standard-items.css</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Communication\Communication.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Functions\" />
+    <Folder Include="wwwroot\css\standard-items\Inputs\" />
+    <Folder Include="wwwroot\css\standard-items\Cards\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="..\.dockerignore" />
+  </ItemGroup>
+
+</Project>

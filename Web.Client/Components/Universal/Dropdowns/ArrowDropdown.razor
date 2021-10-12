@@ -1,0 +1,111 @@
+﻿@inject GlobalClicksCatcher globalClicksCatcher;
+@inject NavigationManager navMan;
+
+<div style="display:inline; padding: 2px" @onmouseover="onMouseIn" @onmouseout="onMouseOut">
+    <button @onclick="e => Toggle()">
+        @Text<i class="material-icons">@Icon</i>
+    </button>
+    @if (Open)
+    {
+        <ul class="dropdown-content" >
+            @foreach (var option in Options)
+            {
+                if (option is DropdownMenuOption.Link link)
+                {
+                    <li>
+                        <button @onclick="e => navMan.NavigateTo(link.Href)">
+                            @option.Text
+                        </button>
+                    </li>
+                }
+                else if (option is DropdownMenuOption.Button button)
+                {
+                    <li>
+                        <button @onclick="e => button.OnClick()">
+                            @option.Text
+                        </button>
+                    </li>
+                }
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public IEnumerable<DropdownMenuOption> Options { get; set; }
+
+    private bool mouseOver;
+
+    string Icon => Open ? "expand_more" : "chevron_right";
+
+    void Toggle(bool? setTo = null)
+    {
+        if (Open == setTo)
+        {
+            return;
+        }
+        bool value = !Open;
+        Open = value;
+        if (!value)
+        {
+            globalClicksCatcher.OnGlobalMouseClick -= CloseOnOuterClick;
+            //Console.WriteLine($"Handler removed. {handlersCount}");
+        }
+        else
+        {
+            globalClicksCatcher.OnGlobalMouseClick += CloseOnOuterClick;
+            //Console.WriteLine($"Handler added. {handlersCount}");
+        }
+        StateHasChanged();
+    }
+
+    void onMouseIn()
+    {
+        mouseOver = true;
+        //Console.WriteLine("Mouse in");
+    }
+
+    void onMouseOut()
+    {
+        mouseOver = false;
+        //Console.WriteLine("Mouse out");
+    }
+
+    private EventHandler<MouseEventArgs> CloseOnOuterClick;
+
+    int handlersCount => globalClicksCatcher.OnGlobalMouseClick.GetInvocationList().Length;
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        //Console.WriteLine(handlersCount);
+        if (firstRender)
+        {
+            CloseOnOuterClick = new((o, e) =>
+            {
+                //Console.WriteLine("Event fired.");
+                if (Open && !mouseOver)
+                {
+                    Toggle(false);
+                }
+            });
+        }
+
+
+    }
+
+
+}

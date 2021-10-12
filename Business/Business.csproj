@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\Communication\Communication.csproj" />
+  </ItemGroup>
+
+
+  <!--Code generation requisites-->
+
+  <ItemGroup>
+    <Reference Include="CodeGenerationClientDependency">
+      <HintPath>..\SourceGeneration_1c8ef23e-6cbb-45cc-8661-72abcef0f120\dlls\CodeGenerationClientDependency.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SourceGeneration_1c8ef23e-6cbb-45cc-8661-72abcef0f120\SourceGeneration_1c8ef23e-6cbb-45cc-8661-72abcef0f120.csproj" />
+  </ItemGroup>
+  
+  <!--Code generation requisites-->
+
+
+</Project>

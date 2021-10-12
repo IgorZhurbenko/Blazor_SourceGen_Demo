@@ -1,0 +1,87 @@
+﻿@typeparam TItem;
+
+@using Common.Extensions.Object;
+
+@inject GlobalClicksCatcher globalClickCatcher;
+
+@code{
+    [Parameter]
+    public TItem SelectedItem { get; set; }
+
+    [Parameter]
+    public Func<uint, string, Task<IList<TItem>>> GetBatch { get; set; }
+
+    [Parameter]
+    public uint BatchSize { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> GetItemRepresentation { get; set; }
+
+    [Parameter]
+    public Action<TItem> OnItemSelect { get; set; } = o => { };
+
+    [Parameter]
+    public Func<TItem, TItem, bool> ItemsComparison { get; set; }
+
+    [Parameter]
+    public string InputLabel { get; set; }
+
+    [Parameter]
+    public Func<TItem, bool> ItemEmpty { get; set; } = i => i == null;
+
+    protected bool AnythingSelected;
+
+    protected virtual IList<TItem> ProcessBatch(IList<TItem> incomingBatch) => incomingBatch;
+
+    protected EventHandler<MouseEventArgs> OnGlobalMouseClick = (a, b) => { };
+    protected EventHandler<KeyboardEventArgs> OnKeyClick = (a, b) => { };
+    protected uint _currentBatchNumber = 1;
+
+    protected IList<TItem> _currentBatch = new List<TItem>();
+    protected bool _showList { get; set; } = false;
+
+    protected string _filterString { get; set; }
+
+    protected async Task OnFilterChange(string filterValue)
+    {
+        _filterString = filterValue;
+        _currentBatch = ProcessBatch(await GetBatch(_currentBatchNumber, filterValue));
+        if (_currentBatch.Any())
+        {
+            _toggleList(true);
+        }
+        StateHasChanged();
+    }
+
+    protected virtual void _toggleList(bool onoff)
+    {
+        if (_showList == onoff) { return; }
+        _showList = onoff;
+
+        if (_showList == true)
+        {
+            globalClickCatcher.OnGlobalMouseClick += OnGlobalMouseClick;
+            globalClickCatcher.OnKeyClick += OnKeyClick;
+            SelectedItem = _currentBatch.FirstOrDefault();
+        }
+        else
+        {
+            globalClickCatcher.OnGlobalMouseClick -= OnGlobalMouseClick;
+            globalClickCatcher.OnKeyClick -= OnKeyClick;
+        }
+    }
+
+    protected virtual void ConfigureClickHandlers()
+    {
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        ConfigureClickHandlers();
+    }
+
+    protected virtual void _onItemSelect(TItem item)
+    {
+    }
+}

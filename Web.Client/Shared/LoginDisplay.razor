@@ -1,0 +1,53 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Services.ServerCommunication;
+@using Components.Universal.Dropdowns;
+
+@inject SessionActionsInvoker sessionInvoker;
+
+@if (!Account.Authorised())
+{
+    <button class="inner-link" @onclick="e => Account.RedirectToLogin()">Log in</button>
+}
+else
+{
+    var userDropdownOptions = new DropdownMenuOption[]
+    {
+        new DropdownMenuOption.Button
+        {
+            Text = "Log out",
+            OnClick = () => LogOut()
+        },
+        new DropdownMenuOption.Link
+        {
+            Text = "Change password",
+            Href = "/changepassword"
+        }
+                };
+    <span class="text-afterwards">
+        Logged in as
+    </span>
+    <Web.Client.Components.Universal.Dropdowns.ArrowDropdown Text="@Account.User.Representation" Options="userDropdownOptions" />
+}
+
+@code{
+    [Parameter]
+    public Func<Task> OnLogoutCallback { get; set; }
+
+    private async Task LogOut()
+    {
+        var result = await sessionInvoker.EndSession.GetResultAsync(Account.SessionKey);
+        Account.AnnulAuthorisation();
+        await OnLogoutCallback();
+        Account.RedirectToLogin();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Account.PermissionsChanged += StateHasChanged;
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

@@ -1,0 +1,88 @@
+﻿@layout EmptyLayout
+@page "/login/{*RedirectToAfter}"
+@inject NavigationManager navMan;
+@using Web.Client.Components.Universal.Inputs;
+@using Communication.Exceptions;
+
+@inject Web.Client.Services.ServerCommunication.SessionActionsInvoker sessionInvoker;
+@inject Web.Client.Services.UI.GlobalClicksCatcher globalClickCatcher;
+
+<div class="card-central card-login">
+    <h6 style="text-align:center"> Login here </h6>
+
+    <StringInput InputLabel="Login" OnValueSet="v => { LoginEntered = v; ErrorMessage = null; StateHasChanged(); Console.WriteLine(v.ToJson(true)); }" Value="@LoginEntered" />
+    <StringInput InputLabel="Password" OnValueSet="v => { PasswordEntered = v; ErrorMessage = null; StateHasChanged(); }" Value="@PasswordEntered" />
+
+    <button style="margin-left:80%"
+            @onclick="async e => await OnLoginClickAsync()">
+        Sign in
+    </button>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <p style="color:red">
+            @ErrorMessage
+        </p>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public string LoginEntered { get; set; } = "";
+
+    [Parameter]
+    public string PasswordEntered { get; set; } = "";
+
+    [Parameter]
+    public string ErrorMessage { get; set; }
+
+    [Parameter]
+    public string RedirectToAfter { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            onClickEnter = new(async (k, e) =>
+             {
+                 Console.WriteLine(e.Key);
+                 if (e.Key == "Enter")
+                 {
+                     await OnLoginClickAsync();
+                 }
+             });
+            Console.WriteLine($"Current count: {globalClickCatcher.OnKeyClick.GetInvocationList().Length}.");
+            globalClickCatcher.OnKeyClick += onClickEnter;
+            Console.WriteLine($"Added listener. Current count: {globalClickCatcher.OnKeyClick.GetInvocationList().Length}.");
+        }
+    }
+
+    EventHandler<KeyboardEventArgs> onClickEnter = (a, b) => { };
+
+    private async Task OnLoginClickAsync()
+    {
+        Communication.Models.StartSessionResponse.IStartSessionResponseModel response = null;
+        try
+        {
+            response = await sessionInvoker.StartSession.GetResultAsync(LoginEntered, PasswordEntered);
+            await Task.Run(() => Account.AuthoriseSession(response.SessionKey, response.User, response.Permissions));
+            navMan.NavigateTo(RedirectToAfter ?? "/");
+        }
+        catch (ServerSideException ex)
+        {
+            if (ex.InnerException is InvalidCredentialsHadledException)
+            {
+                ErrorMessage = ex.InnerException.Message;
+                Console.WriteLine($"But would redirect to {RedirectToAfter}.");
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+    }
+}

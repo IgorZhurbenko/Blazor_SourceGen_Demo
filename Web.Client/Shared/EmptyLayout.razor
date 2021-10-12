@@ -1,0 +1,7 @@
+﻿@inherits LayoutComponentBase
+@inject Web.Client.Services.UI.GlobalClicksCatcher globalClickCatcher;
+
+
+<div @onkeydown="e => globalClickCatcher.OnKeyClick.Invoke(this, e)">
+@Body
+</div>

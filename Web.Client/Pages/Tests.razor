@@ -1,0 +1,41 @@
+﻿@page "/test"
+
+@inject Web.Client.Services.ServerCommunication.SimpleActionsInvoker simpleInvoker;
+@inject Web.Client.Services.ServerCommunication.EmployeeCustomActionsInvoker customActions;
+@inject Web.Client.Services.ServerCommunication.EmployeeCustomActionsInvoker employeeCustomActions;
+@inject IDialogService DialogService;
+
+@using Pages;
+@using Communication.Models.Entities.ReferrableEntities.DataHolders.Persons.Employee;
+
+@inject ISnackbar Snackbar
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="@(() => Snackbar.Add($"Simple Snackbar"))">
+    Open Snackbar
+</MudButton>
+
+
+<MudButton @onclick="OpenDialog" Variant="Variant.Filled" Color="Color.Primary">
+    Open Simple Dialog
+</MudButton>
+
+@code {
+    private IEmployeeReference[] options;
+    private IEmployeeReference ChosenReference;
+
+    protected override void OnInitialized()
+    {
+        options = new IEmployeeReference[]
+        {
+            new EmployeeReference() { ID = 1, Representation = "Ivan" },
+            new EmployeeReference() { ID = 2, Representation = "Egor" }
+                        };
+        ChosenReference = options.First();
+    }
+
+    private void OpenDialog()
+    {
+        DialogService.Show<Pages.Dialog>("Simple Dialog");
+    }
+
+}
